@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src", 
+    "outDir": "./dist", 
+    "module": "commonjs", 
+    "target": "esnext", 
+    "moduleResolution": "node", 
+    "esModuleInterop": true, 
+    "strict": true, 
+    "baseUrl": "./src",
+    "paths": {"@common/*":["common/*"]}
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
