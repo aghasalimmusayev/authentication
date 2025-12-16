@@ -1,6 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import authRoute from 'routes/auth.route'
+import route from 'routes/route'
 import cookieParser from 'cookie-parser'
 dotenv.config()
 const PORT = process.env.PORT
@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
     res.send('AUTHENTICATION ROUTES')
 })
 
-app.use('/api/auth', authRoute)
+app.use('/api/auth', route)
 
 app.use((err: any, req: any, res: any, next: any) => {
     console.error('ERROR:', err);

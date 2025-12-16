@@ -1,23 +1,13 @@
 import jwt, { SignOptions } from 'jsonwebtoken'
-import dotenv from 'dotenv'
 import crypto from 'crypto'
 import pool from 'db/connection'
 import bcrypt from 'bcrypt'
-
-// const JWT_SECRET = "TOP_SECRET_KEY_IS_AM11485203S"
-// const JWT_EXPIRES_IN = "10m"
-
-// console.log(JWT_EXPIRES_IN)
+import { JwtPayload } from 'types/types'
 
 const JWT_SECRET = process.env.JWT_SECRET
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? '10m';
 
 if (!JWT_SECRET) throw new Error('JWT_SECRET is not defined in environment variables')
-
-export interface JwtPayload {
-    id: string,
-    email: string
-}
 
 export const generateAccessToken = (payload: JwtPayload): string => {
     const options: SignOptions = { expiresIn: JWT_EXPIRES_IN as SignOptions['expiresIn'] }
@@ -47,7 +37,6 @@ export const verifyRefreshToken = async (token: string) => {
         where token = $1 and is_revoked = false and expires_at > now()`, [token]);
     return result.rows[0] || null;
 };
-
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash)

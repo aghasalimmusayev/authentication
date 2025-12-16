@@ -1,12 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import { AuthRequest } from "types/types";
 import { verifyToken } from "utils/jwt";
 
-export interface AuthRequest extends Request {
-    user?: {
-        id: string,
-        email: string
-    }
-}
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
     const auth = req.headers.authorization
     if (!auth) return res.status(401).json({

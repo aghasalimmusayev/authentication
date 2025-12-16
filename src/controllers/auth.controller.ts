@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { login, logout, refreshAccessToken, register } from "../services/auth.service";
-import { AuthRequest } from "types/auth";
+import { AuthRequest } from "types/types";
 
 export async function registerUser(req: Request, res: Response, next: NextFunction) {
     try {

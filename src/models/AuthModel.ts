@@ -1,10 +1,17 @@
 import pool from "db/connection";
+import { RegisterDto } from "types/types";
 
 export class AuthModel {
 
     static async registerModel(username: string, email: string, password_hash: string) {
         const result = await pool.query(`insert into users (username, email, password_hash) values ($1, $2, $3) 
             returning id, username, email, created_at`, [username, email, password_hash])
+        return result.rows[0]
+    }
+
+    static async create(data: RegisterDto) {
+        const result = await pool.query(`insert into users (username, email, password_hash, role) values ($1, $2, $3, $4) 
+            returning id, username, email, role, created_at`, [data.username, data.email, data.password_hash, data.role])
         return result.rows[0]
     }
 

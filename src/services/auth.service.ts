@@ -1,13 +1,13 @@
 import { hashPassword } from 'utils/hash'
 import { cleanUpTokens, generateAccessToken, generateRefreshToken, saveToken, verifyPassword, verifyRefreshToken } from 'utils/jwt'
-import { DatabaseError } from 'pg'
 import { AuthModel } from 'models/AuthModel'
+import { Role } from 'types/types'
 
 async function register(username: string, email: string, password_hash: string) {
     try {
         const hashed_password = await hashPassword(password_hash)
         const user = await AuthModel.registerModel(username, email, hashed_password)
-        const accessToken = generateAccessToken({ id: user.id, email: user.email })
+        const accessToken = generateAccessToken({ id: user.id, email: user.email, role: Role.USER })
         const refreshToken = generateRefreshToken()
         await saveToken(user.id, refreshToken)
         return {
@@ -15,17 +15,16 @@ async function register(username: string, email: string, password_hash: string) 
             user: {
                 id: user.id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                role: user.role
             },
             accessToken,
             refreshToken
         }
     } catch (error: any) {
-        if (error.code === '23505') {
-            return {
-                success: false,
-                error: 'Bu username ve ya email artiq istifade olunur'
-            }
+        if (error.code === '23505') return {
+            success: false,
+            error: 'Bu username ve ya email artiq istifade olunur'
         }
         throw error
     }
@@ -45,7 +44,7 @@ async function login(usernameOrEmail: string, password: string) {
             error: 'Password invalid'
         }
         await cleanUpTokens(user.id)
-        const accessToken = generateAccessToken({ id: user.id, email: user.email })
+        const accessToken = generateAccessToken({ id: user.id, email: user.email, role: Role.USER })
         const refreshToken = generateRefreshToken()
         await saveToken(user.id, refreshToken)
         return {
@@ -72,7 +71,8 @@ async function refreshAccessToken(token: string): Promise<RefreshResult> {
     if (!result) return { success: false, error: "Invalid or expired refresh token" }
     const accessToken = generateAccessToken({
         id: result.user_id,
-        email: result.email
+        email: result.email,
+        role: result.role
     })
     return { success: true, accessToken: accessToken }
 }
