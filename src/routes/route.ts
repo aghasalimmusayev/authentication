@@ -4,14 +4,13 @@ import { authMiddleware } from "middlewares/auth.middleware";
 import { requireRole } from "middlewares/role.middleware";
 import { Role } from "types/types";
 import { createUserController } from "controllers/admin.controller";
-import { getPermissions, userPermissions } from "controllers/permission.controller";
-import { requirePermission } from "middlewares/permission.middleware";
-import { AuthRequest } from "types/types";
+import { rateLimiter } from "utils/helper";
+
 const route = Router()
 
 // Private routes
 route.post('/register', registerUser) // ✅
-route.post('/login', loginUser) // ✅
+route.post('/login', rateLimiter(10, 3), loginUser) // ✅
 route.post('/logout', logoutUser) // ✅
 route.post('/refresh', refreshToken) // ✅
 
@@ -19,13 +18,6 @@ route.post('/refresh', refreshToken) // ✅
 route.get('/me', authMiddleware, me) // ✅
 route.post('/logout-all', logoutAllDevices) // ✅
 route.post('/admin/users', authMiddleware, requireRole(Role.ADMIN), createUserController)
-
-// Test route
-// route.get('/perm-test', authMiddleware, requirePermission('todo', 'delete:all'),
-//     (req: AuthRequest, res) => {
-//         res.status(200).json({ ok: true, user: req.user, organization_id: req.organization_id })
-//     }
-// )
 
 export default route
 

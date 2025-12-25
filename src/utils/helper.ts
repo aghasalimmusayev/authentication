@@ -7,10 +7,11 @@ export async function hasPerm(userId: string, orgId: number, permissionName: str
 }
 
 export const rateLimiter = (second: number, maxRequest: number) => {
+    const minute = second * 60
     return rateLimit({
         windowMs: second * 1000,
         max: maxRequest,
-        message: `Too many request. Try again ${second} sec later`,
+        message: `Too many request. Try again ${minute} sec later`,
         standardHeaders: true,
         legacyHeaders: true
     })

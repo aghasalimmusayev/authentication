@@ -3,6 +3,7 @@ import { cleanUpTokens, generateAccessToken, generateRefreshToken, saveToken, ve
 import { AuthModel } from 'models/AuthModel'
 import { Role } from 'types/types'
 import { sendMailToUser } from 'utils/mailer'
+import { AppError } from 'errors/error'
 
 async function register(username: string, email: string, password_hash: string) {
     try {
@@ -41,7 +42,7 @@ async function register(username: string, email: string, password_hash: string) 
 async function login(usernameOrEmail: string, password: string) {
     try {
         const user = await AuthModel.loginModel(usernameOrEmail)
-        console.log('user:', user)
+        // console.log('user:', user)
         if (!user) return {
             success: false,
             error: 'Bele istifadeci yoxdu'
@@ -93,7 +94,7 @@ async function refreshAccessToken(token: string): Promise<RefreshResult> {
 }
 
 async function logout(refreshToken: string, harddelete: boolean = false) {
-    if (!refreshToken) throw new Error("No token provided")
+    if (!refreshToken) throw new AppError("No token provided", 400)
     if (harddelete) await AuthModel.logoutAllModel(refreshToken)
     else await AuthModel.logoutModel(refreshToken)
     return { success: true }

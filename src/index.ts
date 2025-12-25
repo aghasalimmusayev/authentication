@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import helmet from 'helmet'
 import todoRoute from 'routes/todo.routes'
+import verificationRoute from 'routes/verification.route'
+import { AppError } from 'errors/error'
 
 dotenv.config()
 const PORT = process.env.PORT
@@ -29,13 +31,15 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', route)
 app.use('/api/auth', todoRoute)
+app.use('/api/auth', verificationRoute)
 
 app.use((err: any, req: any, res: any, next: any) => {
     console.error('ERROR:', err);
+    const statusCode = err instanceof AppError ? err.statusCode : 500
     return res.status(500).json({
         type: "application/problem+json",
-        status: 500,
-        title: "Internal Server Error",
+        status: statusCode,
+        title: statusCode === 500 ? "Internal Server Error" : "Error",
         detail: err?.message ?? "Unexpected error"
     })
 })
@@ -43,3 +47,5 @@ app.use((err: any, req: any, res: any, next: any) => {
 app.listen(PORT, () => {
     console.log(`Server is runnig on http://localhost:${PORT}`)
 })
+
+

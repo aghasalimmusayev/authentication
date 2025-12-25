@@ -42,7 +42,7 @@ export async function registerUser(req: Request, res: Response, next: NextFuncti
 export async function loginUser(req: Request, res: Response, next: NextFunction) {
     try {
         const { username, email, password } = req.body
-        console.log(req.body)
+        // console.log(req.body)
         const identity = username ?? email
         if (!identity || !password) return res.status(400).json({
             type: "application/problem+json",
